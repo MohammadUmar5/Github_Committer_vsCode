@@ -1,0 +1,46 @@
+{
+  "name": "github-commiter",
+  "displayName": "GitHub Committer",
+  "description": "A VS Code extension to automatically track changes and commit them to GitHub at regular intervals.",
+  "version": "0.0.2",
+  "engines": {
+    "vscode": "^1.95.3"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onFileSystemChange",
+    "onWorkspaceContains:README.md"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "github-commiter.startAutoCommit",
+        "title": "Start Auto Commit"
+      },
+      {
+        "command": "github-commiter.stopAutoCommit",
+        "title": "Stop Auto Commit"
+      }
+    ]
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.96.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0"
+  },
+  "dependencies": {
+    "simple-git": "^3.27.0"
+  }
+}
