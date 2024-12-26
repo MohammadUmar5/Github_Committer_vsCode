@@ -1,142 +1,136 @@
-const vscode = require('vscode');
-const simpleGit = require('simple-git');
-const path = require('path');
+const vscode = require("vscode");
+const simpleGit = require("simple-git");
+const { authorizeWithGitHub, getAccessToken } = require("./oauth");
 
 // Initialize simple-git
 const git = simpleGit();
 
-// Track changes
+// Change tracker
 let changeTracker = {
     added: new Set(),
     modified: new Set(),
     deleted: new Set(),
 };
 
-// Interval (in milliseconds)
-const COMMIT_INTERVAL = 30 * 1000; // 30 seconds (for testing)
+let commitTimer = null;
 
-// Function to get the workspace folder
-function getWorkspaceFolder() {
-    return vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]
-        ? vscode.workspace.workspaceFolders[0].uri.fsPath
-        : null;
-}
-
-// Extension activation
 function activate(context) {
-    vscode.window.showInformationMessage('Git Auto-Commit Extension is now active!');
+    vscode.window.showInformationMessage("GitHub Committer extension is now active!");
 
-    // Watch for file events
     context.subscriptions.push(
-        vscode.workspace.onDidSaveTextDocument((document) => trackChanges(document, 'modified')),
-        vscode.workspace.onDidCreateFiles((event) => {
-            event.files.forEach((file) => trackChanges(file, 'added'));
-        }),
-        vscode.workspace.onDidDeleteFiles((event) => {
-            event.files.forEach((file) => trackChanges(file, 'deleted'));
+        vscode.commands.registerCommand("github-commiter.startAutoCommit", startAutoCommit),
+        vscode.commands.registerCommand("github-commiter.stopAutoCommit", stopAutoCommit),
+        vscode.commands.registerCommand("github-commiter.authorizeWithGitHub", async () => {
+            await authorizeWithGitHub();
+            vscode.window.showInformationMessage("GitHub Authorization completed.");
         })
     );
 
-    // Periodic commit timer
-    const workspaceFolder = getWorkspaceFolder();
-    if (workspaceFolder) {
-        const commitTimer = setInterval(() => performCommit(), COMMIT_INTERVAL);
-        context.subscriptions.push({
-            dispose: () => clearInterval(commitTimer),
-        });
-
-        vscode.window.showInformationMessage('Periodic auto-commit initialized!');
-    } else {
-        vscode.window.showErrorMessage('No workspace detected. Auto-commit cannot be initialized.');
-    }
+    // Watch file system for changes
+    const fileWatcher = vscode.workspace.createFileSystemWatcher("**/*", false, false, false);
+    fileWatcher.onDidCreate((uri) => changeTracker.added.add(uri.fsPath));
+    fileWatcher.onDidChange((uri) => changeTracker.modified.add(uri.fsPath));
+    fileWatcher.onDidDelete((uri) => changeTracker.deleted.add(uri.fsPath));
+    context.subscriptions.push(fileWatcher);
 }
 
-// Track changes in files
-function trackChanges(file, changeType) {
-    let filePath;
-
-    if (file && file.uri && file.uri.fsPath) {
-        // Extract the file path from the uri.fsPath property
-        filePath = path.relative(getWorkspaceFolder() || '', file.uri.fsPath);
-    } else if (file && typeof file === 'string') {
-        filePath = file; // Handle plain string paths (if provided)
-    } else {
-        console.error(`Invalid file object:`, file);
+async function startAutoCommit() {
+    if (commitTimer) {
+        vscode.window.showWarningMessage("Auto commit is already running.");
         return;
     }
 
-    if (!filePath || typeof filePath !== 'string') {
-        console.error(`Invalid file path: ${filePath}`);
+    commitTimer = setInterval(performCommit, 30 * 1000); // Commit every 30 seconds
+    vscode.window.showInformationMessage("Auto commit started!");
+}
+
+function stopAutoCommit() {
+    if (!commitTimer) {
+        vscode.window.showWarningMessage("Auto commit is not running.");
         return;
     }
 
-    switch (changeType) {
-        case 'added':
-            changeTracker.added.add(filePath);
-            break;
-        case 'modified':
-            changeTracker.modified.add(filePath);
-            break;
-        case 'deleted':
-            changeTracker.deleted.add(filePath);
-            break;
-    }
+    clearInterval(commitTimer);
+    commitTimer = null;
+    vscode.window.showInformationMessage("Auto commit stopped!");
 }
 
-// Perform git commit
 async function performCommit() {
-    const workspaceFolder = getWorkspaceFolder();
-    if (!workspaceFolder) {
-        vscode.window.showErrorMessage('No workspace folder detected. Please open a Git repository.');
+    const repoPath = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+    if (!repoPath) {
+        vscode.window.showErrorMessage(
+            "No workspace folder detected. Please open a Git repository."
+        );
         return;
     }
 
     try {
-        await git.cwd(workspaceFolder);
+        // Set the current working directory for Git
+        await git.cwd(repoPath);
 
+        // Ensure OAuth authorization
+        if (!getAccessToken()) {
+            vscode.window.showErrorMessage("Please authorize with GitHub first.");
+            return;
+        }
+
+        // Check if remote 'origin' exists
+        const remotes = await git.getRemotes(true);
+        const originRemote = remotes.find((remote) => remote.name === "origin");
+
+        // If no remote named 'origin' exists, add it (optional)
+        if (!originRemote) {
+            vscode.window.showErrorMessage(
+                "No remote named 'origin' found. Please add a remote repository and try again."
+            );
+            return;
+        }
         // Generate commit summary
         const summary = generateSummary();
         if (!summary) {
-            vscode.window.showInformationMessage('No changes to commit.');
+            vscode.window.showInformationMessage("No changes to commit.");
             return;
         }
 
         // Stage changes and commit
-        await git.add('*');
+        await git.add("*");
         const commitMessage = `Auto-Commit: ${new Date().toLocaleString()}\n\n${summary}`;
         await git.commit(commitMessage);
 
-        // Push to remote
-        await git.push();
+        // Push to the remote repository
+        await git.push("origin", "main"); // Replace 'main' with your branch name if different
 
-        // Reset tracker
         resetTracker();
-
-        vscode.window.showInformationMessage('Changes committed and pushed successfully!');
+        vscode.window.showInformationMessage("Changes committed and pushed successfully!");
     } catch (error) {
-        vscode.window.showErrorMessage(`Error during auto-commit: ${error.message}`);
-        console.error('Commit error:', error);
+        vscode.window.showErrorMessage(
+            `Error during auto-commit: ${error.message}`
+        );
     }
 }
 
-// Generate commit summary from tracked changes
 function generateSummary() {
     const summaryLines = [];
 
-    if (changeTracker.added.size) {
-        summaryLines.push(`Added: ${Array.from(changeTracker.added).join(', ')}`);
-    }
+    // Track modified files separately from added files
     if (changeTracker.modified.size) {
-        summaryLines.push(`Modified: ${Array.from(changeTracker.modified).join(', ')}`);
+        summaryLines.push(`Modified: ${Array.from(changeTracker.modified).join(", ")}`);
     }
+    
+    // Track added files
+    if (changeTracker.added.size) {
+        summaryLines.push(`Added: ${Array.from(changeTracker.added).join(", ")}`);
+    }
+    
+    // Track deleted files
     if (changeTracker.deleted.size) {
-        summaryLines.push(`Deleted: ${Array.from(changeTracker.deleted).join(', ')}`);
+        summaryLines.push(`Deleted: ${Array.from(changeTracker.deleted).join(", ")}`);
     }
 
-    return summaryLines.length ? summaryLines.join('\n') : null;
+    return summaryLines.length ? summaryLines.join("\n") : null;
 }
 
-// Reset the change tracker
+
 function resetTracker() {
     changeTracker = {
         added: new Set(),
@@ -145,10 +139,12 @@ function resetTracker() {
     };
 }
 
-// Extension deactivation
-function deactivate() {}
+function deactivate() {
+    if (commitTimer) {
+        clearInterval(commitTimer);
+    }
+}
 
-// Export activate and deactivate
 module.exports = {
     activate,
     deactivate,
