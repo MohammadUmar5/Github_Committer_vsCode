@@ -1,8 +1,8 @@
 {
   "name": "github-commiter",
   "displayName": "GitHub Committer",
-  "description": "A VS Code extension to automatically track changes and commit them to GitHub at regular intervals.",
-  "version": "0.0.2",
+  "description": "A VS Code extension to automatically track changes and commit them to GitHub at regular intervals, with OAuth authentication.",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.95.3"
   },
@@ -24,6 +24,10 @@
       {
         "command": "github-commiter.stopAutoCommit",
         "title": "Stop Auto Commit"
+      },
+      {
+        "command": "github-commiter.authorizeWithGitHub",
+        "title": "Authorize with GitHub"
       }
     ]
   },
@@ -41,6 +45,9 @@
     "eslint": "^9.16.0"
   },
   "dependencies": {
-    "simple-git": "^3.27.0"
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "simple-git": "^3.27.0",
+    "openid-client": "^4.7.0"  
   }
 }
