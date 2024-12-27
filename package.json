@@ -36,11 +36,6 @@
         "type": "string",
         "default": "",
         "description": "GitHub OAuth token stored securely for reuse across sessions."
-      },
-      "github-commiter.commitInterval": {
-        "type": "number",
-        "default": 1800,
-        "description": "Interval (in seconds) between automatic commits."
       }
       }
     }
