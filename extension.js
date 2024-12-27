@@ -28,9 +28,22 @@ function activate(context) {
 
     // Watch file system for changes
     const fileWatcher = vscode.workspace.createFileSystemWatcher("**/*", false, false, false);
-    fileWatcher.onDidCreate((uri) => changeTracker.added.add(uri.fsPath));
-    fileWatcher.onDidChange((uri) => changeTracker.modified.add(uri.fsPath));
-    fileWatcher.onDidDelete((uri) => changeTracker.deleted.add(uri.fsPath));
+
+    fileWatcher.onDidCreate((uri) => {
+        if (!isGitInternalFile(uri.fsPath)) {
+            changeTracker.added.add(uri.fsPath);
+        }
+    });
+    fileWatcher.onDidChange((uri) => {
+        if (!isGitInternalFile(uri.fsPath)) {
+            changeTracker.modified.add(uri.fsPath);
+        }
+    });
+    fileWatcher.onDidDelete((uri) => {
+        if (!isGitInternalFile(uri.fsPath)) {
+            changeTracker.deleted.add(uri.fsPath);
+        }
+    });
     context.subscriptions.push(fileWatcher);
 }
 
@@ -58,9 +71,7 @@ function stopAutoCommit() {
 async function performCommit() {
     const repoPath = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
     if (!repoPath) {
-        vscode.window.showErrorMessage(
-            "No workspace folder detected. Please open a Git repository."
-        );
+        vscode.window.showErrorMessage("No workspace folder detected. Please open a Git repository.");
         return;
     }
 
@@ -105,9 +116,7 @@ async function performCommit() {
         resetTracker();
         vscode.window.showInformationMessage("Changes committed and pushed successfully!");
     } catch (error) {
-        vscode.window.showErrorMessage(
-            `Error during auto-commit: ${error.message}`
-        );
+        vscode.window.showErrorMessage(`Error during auto-commit: ${error.message}`);
     }
 }
 
@@ -138,6 +147,11 @@ function resetTracker() {
         modified: new Set(),
         deleted: new Set(),
     };
+}
+
+function isGitInternalFile(filePath) {
+    // Check for Git internal files (e.g., .git, .gitmodules, etc.)
+    return filePath.includes(".git");
 }
 
 function deactivate() {
