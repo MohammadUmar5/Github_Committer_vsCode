@@ -1,7 +1,3 @@
-Here’s the updated **README** tailored to your current implementation where the commit interval is fixed and users cannot modify it:
-
----
-
 # GitHub Committer Extension
 
 GitHub Committer is a Visual Studio Code extension that automates the process of committing and pushing changes to your GitHub repository. It's perfect for developers looking to save time by automating repetitive Git operations while maintaining an organized commit history.
