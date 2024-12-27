@@ -1,3 +1,7 @@
+Here’s the updated **README** tailored to your current implementation where the commit interval is fixed and users cannot modify it:
+
+---
+
 # GitHub Committer Extension
 
 GitHub Committer is a Visual Studio Code extension that automates the process of committing and pushing changes to your GitHub repository. It's perfect for developers looking to save time by automating repetitive Git operations while maintaining an organized commit history.
@@ -6,11 +10,10 @@ GitHub Committer is a Visual Studio Code extension that automates the process of
 
 ## Features
 
-- **Automatic Commit and Push**: Automatically commits and pushes your changes to your GitHub repository at a regular interval (default: every 30 minutes).
+- **Automatic Commit and Push**: Automatically commits and pushes your changes to your GitHub repository at a fixed interval (every 30 minutes).
 - **Smart Change Tracking**: Tracks added, modified, and deleted files separately to generate detailed commit messages.
 - **OAuth Integration**: Securely authorizes with GitHub, so you don't need to enter credentials repeatedly.
 - **Simple Start/Stop**: Easily start and stop auto-committing using VS Code commands.
-- **Customizable Interval**: Modify the commit interval to suit your workflow needs.
 
 ---
 
@@ -22,24 +25,18 @@ GitHub Committer is a Visual Studio Code extension that automates the process of
 
 ---
 
-## Extension Settings
-
-This extension provides the following configurable settings:
-
-- **`github-commiter.commitInterval`**: Sets the interval (in seconds) between automatic commits. The default value is 1800 seconds (30 minutes).
-
----
-
 ## Commands
 
 The extension includes these user-friendly commands:
 
-1. **`Authorize with GitHub`**
-   - Authorize the extension to interact with your GitHub account. This step is required only once unless the token expires or is revoked.
-2. **`Start Auto Commit`**
-   - Start the automatic commit and push process.
-3. **`Stop Auto Commit`**
-   - Stop the automatic commit process.
+1. **`Authorize with GitHub`**  
+   Authorize the extension to interact with your GitHub account. This step is required only once unless the token expires or is revoked.
+
+2. **`Start Auto Commit`**  
+   Start the automatic commit and push process.
+
+3. **`Stop Auto Commit`**  
+   Stop the automatic commit process.
 
 ---
 
@@ -47,18 +44,19 @@ The extension includes these user-friendly commands:
 
 1. Install the extension from the VS Code Marketplace.
 2. Open a workspace folder with a Git repository.
-3. Use the `Authorize with GitHub` command using `Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (Mac)` to authorize the extension with your GitHub account.
-4. Use the `Start Auto Commit` command using using `Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (Mac)` to begin automated commits and pushes.
-5. The extension will automatically detect changes and commit them to your repository with detailed summaries.
+3. Use the **`Authorize with GitHub`** command via `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac) to authorize the extension with your GitHub account.  
+4. Use the **`Start Auto Commit`** command to begin automated commits and pushes.
+5. The extension will automatically detect changes and commit them to your repository with detailed summaries every 30 minutes.
 
-> **Note:**
-> 1.The GitHub token is securely stored, so you won't need to reauthorize unless the token becomes invalid.
+> **Notes:**  
+> - The GitHub token is securely stored, so you won't need to reauthorize unless the token becomes invalid.  
+> - Use the `Start Auto Commit` command once per session. If you close VS Code or restart your device, simply run the command again to resume hassle-free automation.
 
-## 2.Use the Start Auto Commit command once per session. If you close VS Code or restart your device, simply run the command again to resume hassle-free automation, saving you from dealing with complex command lines.
+---
 
 ## Known Issues
 
-- **Manual Authorization**: Users must manually run the authorization command using `Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (Mac)` when using the extension for the first time.
+- **Manual Authorization**: Users must manually run the authorization command using `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac) when using the extension for the first time.  
 - **Workspace Dependency**: The extension only works when a workspace folder with a valid Git repository is open.
 
 ---

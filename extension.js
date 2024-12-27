@@ -90,7 +90,7 @@ async function performCommit() {
         const remotes = await git.getRemotes(true);
         const originRemote = remotes.find((remote) => remote.name === "origin");
 
-        // If no remote named 'origin' exists, add it (optional)
+        // If no remote named 'origin' exists,show an error message
         if (!originRemote) {
             vscode.window.showErrorMessage(
                 "No remote named 'origin' found. Please add a remote repository and try again."
@@ -111,7 +111,7 @@ async function performCommit() {
         await git.commit(commitMessage);
 
         // Push to the remote repository
-        await git.push("origin", "main"); // Replace 'main' with your branch name if different
+        await git.push("origin", "main"); 
 
         resetTracker();
         vscode.window.showInformationMessage("Changes committed and pushed successfully!");
