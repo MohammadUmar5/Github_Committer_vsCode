@@ -1,65 +1,83 @@
-# exte README
+# GitHub Committer Extension
 
-This is the README for your extension "exte". After writing up a brief description, we recommend including the following sections.
-
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+GitHub Committer is a Visual Studio Code extension that automates the process of committing and pushing changes to your GitHub repository. It's perfect for developers looking to save time by automating repetitive Git operations while maintaining an organized commit history.
 
 ---
 
-## Working with Markdown
+## Features
 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+- **Automatic Commit and Push**: Automatically commits and pushes your changes to your GitHub repository at a regular interval (default: every 30 minutes).
+- **Smart Change Tracking**: Tracks added, modified, and deleted files separately to generate detailed commit messages.
+- **OAuth Integration**: Securely authorizes with GitHub, so you don't need to enter credentials repeatedly.
+- **Simple Start/Stop**: Easily start and stop auto-committing using VS Code commands.
+- **Customizable Interval**: Modify the commit interval to suit your workflow needs.
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
+---
+
+## Requirements
+
+- A GitHub account.
+- Git installed on your system.
+- A workspace folder open in VS Code with a valid Git repository initialized.
+
+---
+
+## Extension Settings
+
+This extension provides the following configurable settings:
+
+- **`github-commiter.commitInterval`**: Sets the interval (in seconds) between automatic commits. The default value is 1800 seconds (30 minutes).
+
+---
+
+## Commands
+
+The extension includes these user-friendly commands:
+
+1. **`Authorize with GitHub`**
+   - Authorize the extension to interact with your GitHub account. This step is required only once unless the token expires or is revoked.
+2. **`Start Auto Commit`**
+   - Start the automatic commit and push process.
+3. **`Stop Auto Commit`**
+   - Stop the automatic commit process.
+
+---
+
+## How It Works
+
+1. Install the extension from the VS Code Marketplace.
+2. Open a workspace folder with a Git repository.
+3. Use the `Authorize with GitHub` command using `Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (Mac)` to authorize the extension with your GitHub account.
+4. Use the `Start Auto Commit` command using using `Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (Mac)` to begin automated commits and pushes.
+5. The extension will automatically detect changes and commit them to your repository with detailed summaries.
+
+> **Note:**
+> 1.The GitHub token is securely stored, so you won't need to reauthorize unless the token becomes invalid.
+
+## 2.Use the Start Auto Commit command once per session. If you close VS Code or restart your device, simply run the command again to resume hassle-free automation, saving you from dealing with complex command lines.
+
+## Known Issues
+
+- **Manual Authorization**: Users must manually run the authorization command using `Ctrl+Shift+P (Windows/Linux) or Cmd+Shift+P (Mac)` when using the extension for the first time.
+- **Workspace Dependency**: The extension only works when a workspace folder with a valid Git repository is open.
+
+---
+
+## Release Notes
+
+### 1.0.0
+
+- Initial release of GitHub Committer.
+- Added support for automatic commits and pushes.
+- Smart file change tracking and detailed commit summaries.
+
+---
 
 ## For more information
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+- [Visual Studio Code's Extension Development Documentation](https://code.visualstudio.com/api)
+- [GitHub OAuth Documentation](https://docs.github.com/en/developers/apps)
 
-**Enjoy!**
+---
+
+**Enjoy seamless GitHub integration with GitHub Committer! 🚀**
