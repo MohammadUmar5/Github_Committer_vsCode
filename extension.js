@@ -53,7 +53,7 @@ async function startAutoCommit() {
         return;
     }
 
-    commitTimer = setInterval(performCommit, 30 * 1000); // Commit every 30 seconds
+    commitTimer = setInterval(performCommit, 30 * 60* 1000); // Commit every 30 minutes
     vscode.window.showInformationMessage("Auto commit started!");
 }
 

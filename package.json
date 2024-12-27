@@ -39,7 +39,7 @@
       },
       "github-commiter.commitInterval": {
         "type": "number",
-        "default": 30,
+        "default": 1800,
         "description": "Interval (in seconds) between automatic commits."
       }
       }
