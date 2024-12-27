@@ -69,7 +69,8 @@ async function performCommit() {
         await git.cwd(repoPath);
 
         // Ensure OAuth authorization
-        if (!getAccessToken()) {
+        const token = getAccessToken();
+        if (!token) {
             vscode.window.showErrorMessage("Please authorize with GitHub first.");
             return;
         }
@@ -85,6 +86,7 @@ async function performCommit() {
             );
             return;
         }
+
         // Generate commit summary
         const summary = generateSummary();
         if (!summary) {
@@ -116,12 +118,12 @@ function generateSummary() {
     if (changeTracker.modified.size) {
         summaryLines.push(`Modified: ${Array.from(changeTracker.modified).join(", ")}`);
     }
-    
+
     // Track added files
     if (changeTracker.added.size) {
         summaryLines.push(`Added: ${Array.from(changeTracker.added).join(", ")}`);
     }
-    
+
     // Track deleted files
     if (changeTracker.deleted.size) {
         summaryLines.push(`Deleted: ${Array.from(changeTracker.deleted).join(", ")}`);
@@ -129,7 +131,6 @@ function generateSummary() {
 
     return summaryLines.length ? summaryLines.join("\n") : null;
 }
-
 
 function resetTracker() {
     changeTracker = {
