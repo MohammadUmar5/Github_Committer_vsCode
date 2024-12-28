@@ -39,17 +39,7 @@
         "command": "github-commiter.authorizeWithGitHub",
         "title": "Authorize with GitHub"
       }
-    ],
-    "configuration": {
-      "type": "object",
-      "properties": {
-        "github-commiter.token": {
-          "type": "string",
-          "default": "",
-          "description": "GitHub OAuth token stored securely for reuse across sessions."
-        }
-      }
-    }
+    ]
   },
   "license":"Apache-2.0",
   "scripts": {
