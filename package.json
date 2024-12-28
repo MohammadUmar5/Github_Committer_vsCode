@@ -4,7 +4,7 @@
   "description": "A VS Code extension to automatically track changes and commit them to GitHub at regular intervals, with OAuth authentication and token persistence.",
   "version": "0.0.4",
   "engines": {
-    "vscode": "^1.95.3"
+    "vscode": "^1.96.2"
   },
   "categories": [
     "Other"
