@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const CLIENT_ID = process.env.CLIENT_ID; // Loaded from .env
 const CLIENT_SECRET = process.env.CLIENT_SECRET; // Loaded from .env
-const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000/callback'; // Default fallback
+const REDIRECT_URI = process.env.REDIRECT_URI; // Default fallback
 
 let accessToken = null;
 
