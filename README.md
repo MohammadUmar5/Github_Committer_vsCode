@@ -18,6 +18,7 @@ GitHub Committer is a Visual Studio Code extension that automates the process of
 - A GitHub account.
 - Git installed on your system.
 - A workspace folder open in VS Code with a valid Git repository initialized.
+- For now it commits and push to "main" branch only.
 
 ---
 
@@ -69,7 +70,7 @@ The extension includes these user-friendly commands:
 
 License
 This extension is licensed under the Apache License, Version 2.0.
-Copyright [2024] [Umar]
+Copyright 2024 Mohd Umar Warsi
 
 Licensed under the Apache License, Version 2.0 (the "License");  
 you may not use this file except in compliance with the License.  
