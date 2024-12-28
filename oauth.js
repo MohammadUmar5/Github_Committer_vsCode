@@ -1,9 +1,10 @@
 const vscode = require('vscode');
 const axios = require('axios');
+require('dotenv').config();
 
-const CLIENT_ID = 'Ov23liHnfz8HDgIoBsZk'; // Replace with your GitHub App's Client ID
-const CLIENT_SECRET = '9adc183f1f90249ce2046d37e7d0f8fed76dc509'; // Replace with your GitHub App's Client Secret
-const REDIRECT_URI = 'http://localhost:3000/callback'; // Replace with your GitHub App's Redirect URI
+const CLIENT_ID = process.env.CLIENT_ID; // Loaded from .env
+const CLIENT_SECRET = process.env.CLIENT_SECRET; // Loaded from .env
+const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000/callback'; // Default fallback
 
 let accessToken = null;
 
