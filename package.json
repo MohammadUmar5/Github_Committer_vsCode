@@ -13,6 +13,7 @@
     "type": "git",
     "url": "https://github.com/MohammadUmar5/Github_Committer_vsCode.git"
   },
+  "homepage": "https://github.com/MohammadUmar5/Github_Committer_vsCode",
   "engines": {
     "vscode": "^1.96.2"
   },
