@@ -9,6 +9,10 @@
     "color": "#21214c",
     "theme": "dark"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MohammadUmar5/Github_Committer_vsCode.git"
+  },
   "engines": {
     "vscode": "^1.96.2"
   },
