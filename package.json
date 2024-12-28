@@ -4,7 +4,7 @@
   "description": "A VS Code extension to automatically track changes and commit them to GitHub at regular intervals, with OAuth authentication and token persistence.",
   "version": "0.0.4",
   "icon": "images/logo.png",
-  "publisher": "Mohd Umar Warsi",
+  "publisher": "MohdUmarWarsi",
   "galleryBanner": {
     "color": "#21214c",
     "theme": "dark"
