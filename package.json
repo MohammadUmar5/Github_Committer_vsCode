@@ -56,8 +56,9 @@
   },
   "dependencies": {
     "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "simple-git": "^3.27.0",
-    "openid-client": "^4.7.0"
+    "openid-client": "^4.7.0",
+    "simple-git": "^3.27.0"
   }
 }
