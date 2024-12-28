@@ -9,6 +9,8 @@ test/**
 **/eslint.config.mjs       
 **/.vscode-test.*          
 .env                       
+node_modules/**            
+!node_modules/essential-module/** 
 *.log                      
 *.md                      
 dist/**                    
