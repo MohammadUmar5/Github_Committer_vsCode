@@ -1,8 +1,9 @@
 const vscode = require("vscode");
 const axios = require("axios");
+require("dotenv").config(); // Load environment variables from .env file
 
-const CLIENT_ID="Ov23liCDsOW9cIIeW52k"; // Loaded from .env
-const CLIENT_SECRET="c47cb8de05587664ddf3f1b0a2bb128b2c67f86c"; // Loaded from .env
+const CLIENT_ID=process.env.CLIENT_ID; // Loaded from .env
+const CLIENT_SECRET=process.env.CLIENT_SECRET; // Loaded from .env
 const redirect_uri = "http://localhost:3000/callback"; // Default fallback
 
 let accessToken = null;
