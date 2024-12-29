@@ -1,6 +1,6 @@
 const vscode = require("vscode");
 const simpleGit = require("simple-git");
-const { authorizeWithGitHub, getAccessToken } = require("./oauth");
+const { authorizeWithGitHub, getAccessToken, getStoredToken, storeToken } = require("./oauth");
 
 // Initialize simple-git
 const git = simpleGit();
@@ -22,7 +22,7 @@ function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "github-commiter.startAutoCommit",
-      startAutoCommit
+      () => startAutoCommit(context) // Pass context
     ),
     vscode.commands.registerCommand(
       "github-commiter.stopAutoCommit",
@@ -31,7 +31,7 @@ function activate(context) {
     vscode.commands.registerCommand(
       "github-commiter.authorizeWithGitHub",
       async () => {
-        await authorizeWithGitHub();
+        await authorizeWithGitHub(context); // Pass context
         vscode.window.showInformationMessage("GitHub Authorization completed.");
       }
     )
@@ -63,8 +63,8 @@ function activate(context) {
   context.subscriptions.push(fileWatcher);
 }
 
-async function startAutoCommit() {
-  const token = await getStoredToken();
+async function startAutoCommit(context) {
+  const token = await getStoredToken(context); // Use imported function
   if (!token) {
     vscode.window.showErrorMessage("Please authorize with GitHub first.");
     return;
@@ -74,7 +74,7 @@ async function startAutoCommit() {
     return;
   }
 
-  commitTimer = setInterval(performCommit, 30 * 60 * 1000); // Commit every 30 minutes
+  commitTimer = setInterval(performCommit, 30 * 1000); // Commit every 30 minutes
   vscode.window.showInformationMessage("Auto commit started!");
 }
 
@@ -183,18 +183,6 @@ function resetTracker() {
 function isGitInternalFile(filePath) {
   // Check for Git internal files (e.g., .git, .gitmodules, etc.)
   return filePath.includes(".git");
-}
-
-// Function to store token in globalState
-async function storeToken(token) {
-  await vscode.workspace
-    .getConfiguration()
-    .update("github-commiter.token", token, vscode.ConfigurationTarget.Global);
-}
-
-// Function to retrieve stored token from globalState
-async function getStoredToken() {
-  return vscode.workspace.getConfiguration().get("github-commiter.token");
 }
 
 function deactivate() {
