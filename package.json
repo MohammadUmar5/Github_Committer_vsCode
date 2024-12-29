@@ -13,7 +13,6 @@
     "type": "git",
     "url": "https://github.com/MohammadUmar5/Github_Committer_vsCode.git"
   },
-  "homepage": "https://github-committer-vs-code.vercel.app",
   "engines": {
     "vscode": "^1.96.2"
   },
@@ -27,6 +26,7 @@
   "main": "./extension.js",
   "contributes": {
     "commands": [
+   
       {
         "command": "github-commiter.startAutoCommit",
         "title": "Start Auto Commit"
@@ -39,9 +39,19 @@
         "command": "github-commiter.authorizeWithGitHub",
         "title": "Authorize with GitHub"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "github-commiter.token": {
+          "type": "string",
+          "default": "",
+          "description": "The stored GitHub token used for authentication"
+        }
+      }
+    }
   },
-  "license":"Apache-2.0",
+  "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
