@@ -1,7 +1,7 @@
 {
   "name": "github-commiter",
   "displayName": "GitHub Committer",
-  "description": "A VS Code extension to automatically track changes and commit them to GitHub at regular intervals, with OAuth authentication and token persistence.",
+  "description": "A VS Code extension to automatically track changes and commit them to GitHub at regular intervals, with OAuth authentication and secure token persistence.",
   "version": "0.0.4",
   "icon": "images/logo.png",
   "publisher": "MohdUmarWarsi",
@@ -26,7 +26,6 @@
   "main": "./extension.js",
   "contributes": {
     "commands": [
-   
       {
         "command": "github-commiter.startAutoCommit",
         "title": "Start Auto Commit"
@@ -46,7 +45,7 @@
         "github-commiter.token": {
           "type": "string",
           "default": "",
-          "description": "The stored GitHub token used for authentication"
+          "description": "The stored GitHub token used for authentication. This is securely stored using VS Code Secret Storage."
         }
       }
     }
@@ -59,7 +58,7 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
+    "@types/node": "^20.x",
     "@types/vscode": "^1.96.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
