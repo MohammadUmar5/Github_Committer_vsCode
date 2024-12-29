@@ -4,7 +4,7 @@ require("dotenv").config(); // Load environment variables from .env file
 
 const CLIENT_ID=process.env.CLIENT_ID; // Loaded from .env
 const CLIENT_SECRET=process.env.CLIENT_SECRET; // Loaded from .env
-const redirect_uri = "http://localhost:3000/callback"; // Default fallback
+const redirect_uri = "https://github-committer-vs-code.vercel.app/callback"; // Default fallback
 
 let accessToken = null;
 
