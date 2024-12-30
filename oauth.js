@@ -1,4 +1,4 @@
-require("dotenv").config({ path: __dirname + '/.env' });
+require("dotenv").config({ path: __dirname + "/.env" });
 const vscode = require("vscode");
 const axios = require("axios");
 
@@ -8,7 +8,8 @@ const redirect_uri = "https://github-committer-vs-code.vercel.app/api/callback";
 
 let accessToken = null;
 
-async function authorizeWithGitHub(context) { // Accept context parameter
+async function authorizeWithGitHub(context) {
+  // Accept context parameter
   const storedToken = await getStoredToken(context); // Pass context here
   if (storedToken) {
     accessToken = storedToken;
@@ -27,6 +28,7 @@ async function authorizeWithGitHub(context) { // Accept context parameter
 async function getStoredToken(context) {
   try {
     const token = await context.secrets.get("githubToken");
+    console.log("Retrieved Token: ", token); // Add this log to check if the token is retrieved
     if (!token) {
       throw new Error("No stored GitHub token found.");
     }
@@ -59,4 +61,10 @@ function getAccessToken() {
   return accessToken;
 }
 
-module.exports = { authorizeWithGitHub, getAccessToken, getStoredToken, storeToken, clearStoredToken };
+module.exports = {
+  authorizeWithGitHub,
+  getAccessToken,
+  getStoredToken,
+  storeToken,
+  clearStoredToken,
+};

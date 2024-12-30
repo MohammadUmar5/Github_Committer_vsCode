@@ -1,5 +1,6 @@
 require("dotenv").config({ path: __dirname + '/../.env' }); // Load environment variables from .env file
-const axios = require("axios");       
+const axios = require("axios");
+const vscode = require("vscode");
 
 module.exports = async (req, res) => {
   const { code } = req.query;
@@ -17,8 +18,7 @@ module.exports = async (req, res) => {
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
         code,
-        redirect_uri:
-          "https://github-committer-vs-code.vercel.app/api/callback",
+        redirect_uri: "https://github-committer-vs-code.vercel.app/api/callback",
       },
       { headers: { Accept: "application/json" } }
     );
@@ -31,8 +31,9 @@ module.exports = async (req, res) => {
 
     const accessToken = tokenResponse.data.access_token;
 
-    // Save token to a database or secret storage (example in your case)
-    // Save access token securely here
+    // Store token securely in VSCode's secret storage
+    const context = req.context; // Assuming you pass the context when calling this function
+    await storeToken(context, accessToken);
 
     return res.status(200).json({
       message: "Authorization successful! You can close this window.",
@@ -45,3 +46,13 @@ module.exports = async (req, res) => {
     });
   }
 };
+
+// Store the token in VSCode secret storage
+async function storeToken(context, token) {
+  try {
+    await context.secrets.store("githubToken", token);
+    vscode.window.showInformationMessage("GitHub token saved securely.");
+  } catch (error) {
+    console.error("Error storing token:", error.message);
+  }
+}
