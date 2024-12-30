@@ -1,3 +1,4 @@
+require("dotenv").config({ path: __dirname + '/../.env' }); // Load environment variables from .env file
 const axios = require("axios");
 const { CLIENT_ID, CLIENT_SECRET } = process.env; // Use environment variables
 const { storeToken } = require("../oauth"); // Import storeToken from oauth.js
