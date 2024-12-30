@@ -9,7 +9,6 @@ const redirect_uri = "https://github-committer-vs-code.vercel.app/api/callback";
 let accessToken = null;
 
 async function authorizeWithGitHub(context) {
-  // Accept context parameter
   const storedToken = await getStoredToken(context); // Pass context here
   if (storedToken) {
     accessToken = storedToken;
