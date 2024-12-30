@@ -1,4 +1,5 @@
-const axios = require("axios");
+require("dotenv").config({ path: __dirname + '/../.env' }); // Load environment variables from .env file
+const axios = require("axios");       
 
 module.exports = async (req, res) => {
   const { code } = req.query;
@@ -16,7 +17,8 @@ module.exports = async (req, res) => {
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
         code,
-        redirect_uri: process.env.REDIRECT_URI,
+        redirect_uri:
+          "https://github-committer-vs-code.vercel.app/api/callback",
       },
       { headers: { Accept: "application/json" } }
     );
