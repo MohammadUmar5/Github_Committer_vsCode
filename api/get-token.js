@@ -1,6 +1,8 @@
+const { getStoredToken } = require("../oauth"); // Import getStoredToken from oauth.js
+
 module.exports = async (req, res) => {
   try {
-    const token = await getStoredToken();  // Assume this is a function to get your stored token
+    const token = await getStoredToken(req.context);  // Pass context here
     if (!token) {
       return res.status(400).json({
         error: "No token found."
