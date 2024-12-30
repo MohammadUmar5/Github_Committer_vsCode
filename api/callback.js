@@ -1,6 +1,5 @@
 require("dotenv").config({ path: __dirname + "/../.env" });
 const axios = require("axios");
-const { storeToken } = require("../oauth");  // Import storeToken from your oauth.js file
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -29,9 +28,6 @@ module.exports = async (req, res) => {
     if (!access_token) {
       return res.status(400).json({ error: "Failed to retrieve access token." });
     }
-
-    // Store the token securely
-    await storeToken(req.context, access_token);  // Use the context to store the token
 
     // Return the token to the client
     res.status(200).json({ token: access_token });
