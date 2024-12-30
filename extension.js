@@ -1,6 +1,6 @@
 const vscode = require("vscode");
 const simpleGit = require("simple-git");
-const { authorizeWithGitHub, getAccessToken, getStoredToken, storeToken } = require("./oauth");
+const { authorizeWithGitHub, getAccessToken, getStoredToken, storeToken, clearStoredToken } = require("./oauth");
 
 // Initialize simple-git
 const git = simpleGit();
@@ -34,7 +34,14 @@ function activate(context) {
         await authorizeWithGitHub(context); // Pass context
         vscode.window.showInformationMessage("GitHub Authorization completed.");
       }
-    )
+    ),
+    vscode.commands.registerCommand(
+      "github-commiter.clearToken", 
+      async () => {
+        await clearStoredToken(context);  // Calling the clearStoredToken function
+        vscode.window.showInformationMessage("GitHub token has been cleared.");
+      }
+    )    
   );
 
   // Watch file system for changes

@@ -17,7 +17,8 @@
     "vscode": "^1.96.2"
   },
   "categories": [
-    "Education","Extension Packs"
+    "Education",
+    "Extension Packs"
   ],
   "activationEvents": [
     "onStartupFinished",
@@ -37,6 +38,10 @@
       {
         "command": "github-commiter.authorizeWithGitHub",
         "title": "Authorize with GitHub"
+      },
+      {
+        "command": "github-commiter.clearToken",
+        "title": "Clear Token"
       }
     ],
     "configuration": {
