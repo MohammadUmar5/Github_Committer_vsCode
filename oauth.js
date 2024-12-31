@@ -9,9 +9,9 @@ const redirect_uri = "https://github-committer-vs-code.vercel.app/api/callback";
 let accessToken = null;
 
 async function authorizeWithGitHub(context) {
-  const storedToken = await getStoredToken(context); // Pass context here
+  const storedToken = await getStoredToken(context); // Retrieve stored token
   if (storedToken) {
-    accessToken = storedToken;
+    accessToken = storedToken; // Use the stored token if available
     vscode.window.showInformationMessage("Using stored GitHub token.");
     return;
   }
@@ -20,9 +20,22 @@ async function authorizeWithGitHub(context) {
   vscode.env.openExternal(vscode.Uri.parse(authUrl));
 
   vscode.window.showInformationMessage(
-    "Please complete authorization in your browser."
+    "Please complete authorization in your browser. Once done, return to VS Code."
   );
+
+  return new Promise((resolve, reject) => {
+    const checkTokenInterval = setInterval(async () => {
+      const newToken = await getStoredToken(context); // Poll for the token
+      if (newToken) {
+        accessToken = newToken; // Save the retrieved token
+        clearInterval(checkTokenInterval); // Stop polling
+        vscode.window.showInformationMessage("Authorization successful!");
+        resolve(accessToken);
+      }
+    }, 5000); // Check every 5 seconds
+  });
 }
+
 
 async function getStoredToken(context) {
   try {
