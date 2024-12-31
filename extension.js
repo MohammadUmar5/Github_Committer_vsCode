@@ -1,5 +1,6 @@
 const vscode = require("vscode");
 const simpleGit = require("simple-git");
+const axios = require("axios"); // Add axios for HTTP requests
 const { authorizeWithGitHub, getAccessToken, getStoredToken, storeToken, clearStoredToken } = require("./oauth");
 
 // Initialize simple-git
@@ -35,14 +36,6 @@ function activate(context) {
         vscode.window.showInformationMessage("GitHub Authorization completed.");
       }
     ),
-    vscode.window.registerUriHandler({
-      handleUri(uri) {
-        if (uri.path === "/callback") {
-          const token = new URLSearchParams(uri.query).get("token");
-          handleTokenCallback(context, token);
-        }
-      },
-    }),
     vscode.commands.registerCommand(
       "github-commiter.clearToken", 
       async () => {
@@ -203,6 +196,24 @@ function isGitInternalFile(filePath) {
 function deactivate() {
   if (commitTimer) {
     clearInterval(commitTimer);
+  }
+}
+
+// Handle token callback from GitHub or server (Vercel)
+async function handleTokenCallback(context, token) {
+  try {
+    if (!token) {
+      // If the token is not passed to this handler, fetch it from the server
+      const response = await axios.get('https://github-committer-vs-code.vercel.app/api/callback');
+      token = response.data.token; // Token should be in the response
+    }
+
+    // Store the token securely in VS Code secrets
+    await storeToken(context, token);
+    vscode.window.showInformationMessage("GitHub token stored successfully.");
+  } catch (error) {
+    console.error("Error during token handling:", error.message);
+    vscode.window.showErrorMessage("Failed to handle token.");
   }
 }
 
