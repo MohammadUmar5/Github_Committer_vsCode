@@ -4,7 +4,6 @@ const axios = require("axios");
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const redirect_uri = "https://github-committer-vs-code.vercel.app/api/callback";
-const oauth_endpoint = "https://github-committer-vs-code.vercel.app/api/oauth_endpoint";
 
 module.exports = async (req, res) => {
   try {
@@ -31,10 +30,9 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: "Failed to retrieve access token." });
     }
 
-    // Send the token to the OAuth handler
-    await axios.post(oauth_endpoint, { token: access_token });
-
-    res.status(200).json({ message: "Authorization successful!" });
+    // Redirect to the VS Code custom URI with the token
+    const vscodeUri = `vscode://MohdUmarWarsi.github-commiter/callback?token=${encodeURIComponent(access_token)}`;
+    res.redirect(vscodeUri);
   } catch (error) {
     console.error("Error during OAuth process:", error.message);
     res.status(500).json({ error: "Error during OAuth process." });

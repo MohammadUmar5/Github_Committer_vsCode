@@ -35,6 +35,14 @@ function activate(context) {
         vscode.window.showInformationMessage("GitHub Authorization completed.");
       }
     ),
+    vscode.window.registerUriHandler({
+      handleUri(uri) {
+        if (uri.path === "/callback") {
+          const token = new URLSearchParams(uri.query).get("token");
+          handleTokenCallback(context, token);
+        }
+      },
+    }),
     vscode.commands.registerCommand(
       "github-commiter.clearToken", 
       async () => {
