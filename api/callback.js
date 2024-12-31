@@ -4,6 +4,7 @@ const axios = require("axios");
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const redirect_uri = "https://github-committer-vs-code.vercel.app/api/callback";
+const oauth_endpoint = "https://github-committer-vs-code.vercel.app/api/oauth_endpoint";
 
 module.exports = async (req, res) => {
   try {
@@ -13,6 +14,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: "Authorization code is missing." });
     }
 
+    // Exchange code for access token
     const tokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
       {
@@ -29,8 +31,10 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: "Failed to retrieve access token." });
     }
 
-    // Return the token to the client
-    res.status(200).json({ token: access_token });
+    // Send the token to the OAuth handler
+    await axios.post(oauth_endpoint, { token: access_token });
+
+    res.status(200).json({ message: "Authorization successful!" });
   } catch (error) {
     console.error("Error during OAuth process:", error.message);
     res.status(500).json({ error: "Error during OAuth process." });

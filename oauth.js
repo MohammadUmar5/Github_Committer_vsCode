@@ -30,12 +30,26 @@ async function authorizeWithGitHub(context) {
         accessToken = newToken; // Save the retrieved token
         clearInterval(checkTokenInterval); // Stop polling
         vscode.window.showInformationMessage("Authorization successful!");
+
+        // Send token to the API endpoint (axios call)
+        try {
+          await axios.post(
+            "https://github-committer-vs-code.vercel.app/api/oauth_endpoint",
+            { token: newToken }
+          );
+          vscode.window.showInformationMessage(
+            "Token sent successfully to the server!"
+          );
+        } catch (error) {
+          console.error("Error sending token to server:", error.message);
+          vscode.window.showErrorMessage("Failed to send token to server.");
+        }
+
         resolve(accessToken);
       }
     }, 5000); // Check every 5 seconds
   });
 }
-
 
 async function getStoredToken(context) {
   try {
