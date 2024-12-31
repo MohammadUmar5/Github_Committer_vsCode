@@ -1,5 +1,4 @@
 require("dotenv").config({ path: __dirname + "/../.env" });
-const axios = require("axios");
 
 let temporaryToken = null;  // Store token temporarily
 
