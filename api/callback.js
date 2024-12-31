@@ -1,8 +1,7 @@
 require("dotenv").config({ path: __dirname + "/../.env" });
+const axios = require("axios");
 
 let temporaryToken = null;  // Store token temporarily
-
-const axios = require("axios");
 
 module.exports = async (req, res) => {
   try {
@@ -37,7 +36,7 @@ module.exports = async (req, res) => {
   }
 };
 
-// You can access the token directly when VS Code extension makes a request to /api/callback
+// Endpoint to retrieve the token
 module.exports.getToken = async (req, res) => {
   if (temporaryToken) {
     return res.json({ token: temporaryToken });  // Return the temporary token
