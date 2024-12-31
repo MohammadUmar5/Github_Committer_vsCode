@@ -9,9 +9,9 @@ const redirect_uri = "https://github-committer-vs-code.vercel.app/api/callback";
 let accessToken = null;
 
 async function authorizeWithGitHub(context) {
-  const storedToken = await getStoredToken(context); // Retrieve stored token
+  const storedToken = await getStoredToken(context);
   if (storedToken) {
-    accessToken = storedToken; // Use the stored token if available
+    accessToken = storedToken;
     vscode.window.showInformationMessage("Using stored GitHub token.");
     return;
   }
@@ -20,24 +20,17 @@ async function authorizeWithGitHub(context) {
   vscode.env.openExternal(vscode.Uri.parse(authUrl));
 
   vscode.window.showInformationMessage(
-    "Please complete authorization in your browser. Once done, return to VS Code."
+    "Please complete authorization in your browser. Once done, return to VS Code and run the 'Retrieve GitHub Token' command."
   );
 }
 
 async function handleTokenCallback(context, token) {
   try {
     if (!token) {
-      // If the token is not passed from the URL (direct callback response)
-      // Use an API request to fetch it from the server instead
-      const response = await axios.get('https://github-committer-vs-code.vercel.app/api/callback');
-      if (response.data && response.data.token) {
-        token = response.data.token;  // Get the token from the server response
-      } else {
-        throw new Error("Failed to retrieve token from the server.");
-      }
+      throw new Error("No token received.");
     }
 
-    await storeToken(context, token);  // Store the token in the VS Code secrets storage
+    await storeToken(context, token);
     accessToken = token;
     vscode.window.showInformationMessage("Authorization successful and token securely stored.");
   } catch (error) {
@@ -49,7 +42,7 @@ async function handleTokenCallback(context, token) {
 async function getStoredToken(context) {
   try {
     const token = await context.secrets.get("githubToken");
-    console.log("Retrieved Token: ", token); // Add this log to check if the token is retrieved
+    console.log("Retrieved Token: ", token);
     if (!token) {
       throw new Error("No stored GitHub token found.");
     }
@@ -90,4 +83,3 @@ module.exports = {
   storeToken,
   clearStoredToken,
 };
-
