@@ -41,6 +41,7 @@ async function handleTokenCallback(context, token) {
 async function getStoredToken(context) {
   try {
     const token = await context.secrets.get("githubToken");
+    console.log("Retrieved Token: ", token); // Add this log to check if the token is retrieved
     if (!token) {
       throw new Error("No stored GitHub token found.");
     }
@@ -50,6 +51,7 @@ async function getStoredToken(context) {
     return null;
   }
 }
+
 
 async function storeToken(context, token) {
   try {
