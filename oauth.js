@@ -1,85 +1,75 @@
-require("dotenv").config({ path: __dirname + "/.env" });
 const vscode = require("vscode");
-const axios = require("axios");
-
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const redirect_uri = "https://github-committer-vs-code.vercel.app/api/callback";  // Your Vercel callback URL
-
-let accessToken = null;
 
 async function authorizeWithGitHub(context) {
-  const storedToken = await getStoredToken(context);
-  if (storedToken) {
-    accessToken = storedToken;
-    vscode.window.showInformationMessage("Using stored GitHub token.");
-    return;
-  }
-
-  const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=repo&redirect_uri=${redirect_uri}`;
-  vscode.env.openExternal(vscode.Uri.parse(authUrl));
-
-  vscode.window.showInformationMessage(
-    "Please complete authorization in your browser. Once done, return to VS Code and run the 'Retrieve GitHub Token' command."
+  const session = await vscode.authentication.getSession(
+    "github",
+    ["user:email"],
+    { createIfNone: true }
   );
-}
 
-async function handleTokenCallback(context, token) {
-  try {
-    if (!token) {
-      throw new Error("No token received.");
+  if (session) {
+    console.log("GitHub authorization successful.");
+
+    // Storing the token in secret storage
+    if (context.secrets) {
+      await context.secrets.store("github-token", session.accessToken);
+      return session.accessToken; // Return the token for further use in the extension
+    } else {
+      throw new Error("Secret storage is not available.");
     }
-
-    await storeToken(context, token);
-    accessToken = token;
-    vscode.window.showInformationMessage("Authorization successful and token securely stored.");
-  } catch (error) {
-    console.error("Error handling token callback:", error.message);
-    vscode.window.showErrorMessage("Failed to store the GitHub token.");
-  }
-}
-
-async function getStoredToken(context) {
-  try {
-    const token = await context.secrets.get("githubToken");
-    console.log("Retrieved Token: ", token);
-    if (!token) {
-      throw new Error("No stored GitHub token found.");
-    }
-    return token;
-  } catch (error) {
-    console.error("Error retrieving token:", error.message);
-    return null;
+  } else {
+    throw new Error("GitHub authorization failed");
   }
 }
 
 async function storeToken(context, token) {
   try {
-    await context.secrets.store("githubToken", token);
-    vscode.window.showInformationMessage("GitHub token saved securely.");
+    if (context.secrets) {
+      await context.secrets.store("github-token", token);
+      console.log("Token successfully stored.");
+    } else {
+      throw new Error("Secret storage is not available.");
+    }
   } catch (error) {
-    console.error("Error storing token:", error.message);
+    console.error("Failed to store token:", error);
+  }
+}
+
+async function getStoredToken(context) {
+  try {
+    if (context.secrets) {
+      const token = await context.secrets.get("github-token");
+      if (token) {
+        console.log("Token successfully retrieved.");
+      } else {
+        console.log("No token found.");
+      }
+      return token; // Return the token to be used in the extension
+    } else {
+      throw new Error("Secret storage is not available.");
+    }
+  } catch (error) {
+    console.error("Failed to retrieve token:", error);
+    return null;
   }
 }
 
 async function clearStoredToken(context) {
   try {
-    await context.secrets.delete("githubToken");
-    vscode.window.showInformationMessage("GitHub token cleared.");
+    if (context.secrets) {
+      await context.secrets.delete("github-token");
+      console.log("Token cleared successfully.");
+    } else {
+      throw new Error("Secret storage is not available.");
+    }
   } catch (error) {
-    console.error("Error clearing token:", error.message);
+    console.error("Failed to clear token:", error);
   }
 }
 
-function getAccessToken() {
-  return accessToken;
-}
-
 module.exports = {
-  authorizeWithGitHub,
-  handleTokenCallback,
-  getAccessToken,
-  getStoredToken,
   storeToken,
+  getStoredToken,
   clearStoredToken,
+  authorizeWithGitHub,
 };

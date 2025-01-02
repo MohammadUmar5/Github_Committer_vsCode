@@ -1,7 +1,10 @@
 const vscode = require("vscode");
 const simpleGit = require("simple-git");
-const axios = require("axios"); // Add axios for HTTP requests
-const { authorizeWithGitHub, getAccessToken, getStoredToken, storeToken, clearStoredToken } = require("./oauth");
+const {
+  authorizeWithGitHub,
+  getStoredToken,
+  clearStoredToken,
+} = require("./oauth");
 
 // Initialize simple-git
 const git = simpleGit();
@@ -15,15 +18,14 @@ let changeTracker = {
 
 let commitTimer = null;
 
-function activate(context) {
+async function activate(context) {
   vscode.window.showInformationMessage(
     "GitHub Committer extension is now active!"
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "github-commiter.startAutoCommit",
-      () => startAutoCommit(context) // Pass context
+    vscode.commands.registerCommand("github-commiter.startAutoCommit", () =>
+      startAutoCommit(context)
     ),
     vscode.commands.registerCommand(
       "github-commiter.stopAutoCommit",
@@ -32,17 +34,14 @@ function activate(context) {
     vscode.commands.registerCommand(
       "github-commiter.authorizeWithGitHub",
       async () => {
-        await authorizeWithGitHub(context); // Pass context
+        await authorizeWithGitHub(context); // Call the authorizeWithGitHub function from oauth.js
         vscode.window.showInformationMessage("GitHub Authorization completed.");
       }
     ),
-    vscode.commands.registerCommand(
-      "github-commiter.clearToken", 
-      async () => {
-        await clearStoredToken(context);  // Calling the clearStoredToken function
-        vscode.window.showInformationMessage("GitHub token has been cleared.");
-      }
-    )    
+    vscode.commands.registerCommand("github-commiter.clearToken", async () => {
+      await clearStoredToken(); // Use clearStoredToken from oauth.js
+      vscode.window.showInformationMessage("GitHub token has been cleared.");
+    })
   );
 
   // Watch file system for changes
@@ -72,7 +71,7 @@ function activate(context) {
 }
 
 async function startAutoCommit(context) {
-  const token = await getStoredToken(context); // Use imported function
+  const token = await getStoredToken(context); // Get stored token from oauth.js
   if (!token) {
     vscode.window.showErrorMessage("Please authorize with GitHub first.");
     return;
@@ -82,7 +81,7 @@ async function startAutoCommit(context) {
     return;
   }
 
-  commitTimer = setInterval(performCommit, 30 * 1000); // Commit every 30 minutes
+  commitTimer = setInterval(() => performCommit(context), 30 * 1000); // Commit every 30 minutes
   vscode.window.showInformationMessage("Auto commit started!");
 }
 
@@ -97,7 +96,7 @@ function stopAutoCommit() {
   vscode.window.showInformationMessage("Auto commit stopped!");
 }
 
-async function performCommit() {
+async function performCommit(context) {
   const repoPath = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
   if (!repoPath) {
     vscode.window.showErrorMessage(
@@ -111,7 +110,7 @@ async function performCommit() {
     await git.cwd(repoPath);
 
     // Ensure OAuth authorization
-    const token = getAccessToken();
+    const token = await getStoredToken(context); // Get the stored token from oauth.js
     if (!token) {
       vscode.window.showErrorMessage("Please authorize with GitHub first.");
       return;
@@ -196,24 +195,6 @@ function isGitInternalFile(filePath) {
 function deactivate() {
   if (commitTimer) {
     clearInterval(commitTimer);
-  }
-}
-
-// Handle token callback from GitHub or server (Vercel)
-async function handleTokenCallback(context, token) {
-  try {
-    if (!token) {
-      // If the token is not passed to this handler, fetch it from the server
-      const response = await axios.get('https://github-committer-vs-code.vercel.app/api/callback');
-      token = response.data.token; // Token should be in the response
-    }
-
-    // Store the token securely in VS Code secrets
-    await storeToken(context, token);
-    vscode.window.showInformationMessage("GitHub token stored successfully.");
-  } catch (error) {
-    console.error("Error during token handling:", error.message);
-    vscode.window.showErrorMessage("Failed to handle token.");
   }
 }
 
